@@ -1,6 +1,6 @@
-#   ╭───────────╮
-#   │ solitaire │ by sandwichman - https://sandwichman.dev/github/solitaire
-#   ╰───────────╯
+#   ╭──╮
+#   │solitaire by sandwichman - https://sandwichman.dev/github/solitaire
+#   ╰──╯
 #
 #   (uHHH technically it's kLoNdiKe)
 
@@ -218,8 +218,8 @@ proc can_place_selection(): bool =
         if board[select_pos].len == 0:                      # is placement stack empty?
             if selection_buffer[0].rank != 13: return false # cant place anything but king on empty tableau
         else:
-            if selection_buffer[0].rank != board[select_pos][board[select_pos].high].rank-1: return false   # cant place out of order
             if selection_buffer[0].color == board[select_pos][board[select_pos].high].color: return false   # cant place on same color
+    if board[select_pos].len != 0 and selection_buffer[0].rank != board[select_pos][board[select_pos].high].rank-1: return false    # cant place out of order
 
     return true
 
