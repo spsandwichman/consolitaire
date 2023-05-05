@@ -37,7 +37,7 @@ var
     last_select_len = 1
     min_height = 28
     min_width = 87
-    bottom_text = "press H to toggle help - press ESC to quit"  # lmao
+    bottom_text = "press `h` to toggle help - press ESC to quit"  # lmao
 
 proc color(card: Card): int = (if card.suit == Spades or card.suit == Clubs: 0 else: 1)
 
@@ -143,9 +143,9 @@ proc render_everything(tb: var TerminalBuffer, bx, by: int) = # EVERYTHINGGGGGGG
 
     #draw help
     if show_help:
-        tb.write(bottom_text_offset+5, terminalHeight()-5, " WASD  move cursor around the board")
-        tb.write(bottom_text_offset+5, terminalHeight()-4, "Space  pick up / place cards")
-        tb.write(bottom_text_offset+5, terminalHeight()-3, "    R  toggle suit chars / letters")
+        tb.write(bottom_text_offset+5, terminalHeight()-5, " wasd  move cursor around the board")
+        tb.write(bottom_text_offset+5, terminalHeight()-4, "space  pick up / place cards")
+        tb.write(bottom_text_offset+5, terminalHeight()-3, "    r  toggle suit chars / letters")
 
     #draw selection box
     var selbox_x = 0
@@ -267,32 +267,32 @@ proc main() =
         var key = getKey()
         case key
             of Key.Escape: exit_proc()
-            of Key.R: 
+            of Key.R, Key.ShiftR: 
                 use_ascii_suits = not use_ascii_suits
-            of Key.H: 
+            of Key.H, Key.ShiftH: 
                 show_help = not show_help
                 # for i in 0..6:
                 #     if board[TABLEAU+i].len == 0: continue
                 #     for card in 0..board[TABLEAU+i].high:
                 #         board[TABLEAU+i][card].visible = true
-            of Key.E:
+            of Key.E, Key.ShiftE:
                 if board[STOCK].len != 0:
                     pop_single(board[STOCK], board[WASTE])
                     board[WASTE][board[WASTE].high].visible = true
                 else:
                     pop_multiple_in_order(board[WASTE], board[STOCK], board[WASTE].len)
-            of Key.A:
+            of Key.A, Key.ShiftA:
                 if select_pos == 0: select_pos = 6
                 elif select_pos == 6: select_pos = 13
                 select_pos -= 1
                 select_len = 1
 
-            of Key.D:
+            of Key.D, Key.ShiftD:
                 if select_pos == 5: select_pos = -1
                 elif select_pos == 12: select_pos = 5
                 select_pos += 1
                 select_len = 1
-            of Key.W:
+            of Key.W, Key.ShiftW:
                 if select_pos < TABLEAU:
                     if select_pos > 1:   # adjust for the gap between waste and foundations
                         select_pos += 1
@@ -308,7 +308,7 @@ proc main() =
                         select_len = 1
                     else:
                         select_len += 1
-            of Key.S:
+            of Key.S, Key.ShiftS:
                 if select_pos < TABLEAU:
                     if select_pos > 1:   # adjust for the gap between waste and foundations
                         select_pos += 1
