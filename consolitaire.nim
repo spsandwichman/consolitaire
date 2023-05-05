@@ -4,7 +4,7 @@
 
 import std/[os, sequtils, random, strutils]
 import illwill
-#randomize()
+randomize()
 
 type
     Suit = enum
