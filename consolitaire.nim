@@ -1,5 +1,5 @@
 #   ╭──╮
-#   │solitaire by sandwichman - https://sandwichman.dev/github/solitaire
+#   │consolitaire by sandwichman - https://sandwichman.dev/github/consolitaire
 #   ╰──╯
 #
 #   (uHHH technically it's kLoNdiKe)
