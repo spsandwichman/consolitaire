@@ -300,7 +300,7 @@ proc main() =
                         select_pos += 1
                     select_pos += TABLEAU
                 else:
-                    if cannot_extend_selection() or in_place_mode:
+                    if cannot_extend_selection() or in_place_mode or key == Key.ShiftW:
                         if select_pos < 8:
                             select_pos -= 6
                         elif select_pos == 8:
@@ -316,7 +316,7 @@ proc main() =
                         select_pos += 1
                     select_pos += 6
                 else:
-                    if select_len < 2:
+                    if select_len < 2 or key == Key.ShiftS:
                         if select_pos < 8:
                             select_pos -= 6
                         elif select_pos == 8:
