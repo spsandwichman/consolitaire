@@ -4,7 +4,7 @@
 
 import std/[os, sequtils, random, strutils]
 import illwill
-randomize()
+#randomize()
 
 type
     Suit = enum
@@ -211,13 +211,14 @@ proc can_place_selection(): bool =
     if select_pos >= FOUNDATIONS and select_pos < TABLEAU:  # inside foundations?
         if selection_buffer.len != 1: return false          # can only place on foundations if placing one card
         if board[select_pos].len == 0 and selection_buffer[0].rank != 1: return false   # cant place anything but ace on empty foundation
-        if board[select_pos].len != 0 and (selection_buffer[0].suit != board[select_pos][0].suit): return false     # cant place a card that does not match suit
+        if board[select_pos].len != 0 and selection_buffer[0].suit != board[select_pos][0].suit: return false     # cant place a card that does not match suit
+        if board[select_pos].len != 0 and selection_buffer[0].rank != (board[select_pos][board[select_pos].high].rank+1): return false    # cant place out of order
     else:                                                   # inside tableau?
         if board[select_pos].len == 0:                      # is placement stack empty?
             if selection_buffer[0].rank != 13: return false # cant place anything but king on empty tableau
         else:
             if selection_buffer[0].color == board[select_pos][board[select_pos].high].color: return false   # cant place on same color
-    if board[select_pos].len != 0 and selection_buffer[0].rank != board[select_pos][board[select_pos].high].rank-1: return false    # cant place out of order
+            if selection_buffer[0].rank != board[select_pos][board[select_pos].high].rank-1: return false    # cant place out of order
 
     return true
 
