@@ -281,18 +281,18 @@ proc main() =
                     board[WASTE][board[WASTE].high].visible = true
                 else:
                     pop_multiple_in_order(board[WASTE], board[STOCK], board[WASTE].len)
-            of Key.A, Key.ShiftA:
+            of Key.A, Key.ShiftA, Key.Left:
                 if select_pos == 0: select_pos = 6
                 elif select_pos == 6: select_pos = 13
                 select_pos -= 1
                 select_len = 1
 
-            of Key.D, Key.ShiftD:
+            of Key.D, Key.ShiftD, Key.Right:
                 if select_pos == 5: select_pos = -1
                 elif select_pos == 12: select_pos = 5
                 select_pos += 1
                 select_len = 1
-            of Key.W, Key.ShiftW:
+            of Key.W, Key.ShiftW, Key.Up:
                 if select_pos < TABLEAU:
                     if select_pos > 1:   # adjust for the gap between waste and foundations
                         select_pos += 1
@@ -308,7 +308,7 @@ proc main() =
                         select_len = 1
                     else:
                         select_len += 1
-            of Key.S, Key.ShiftS:
+            of Key.S, Key.ShiftS, Key.Down:
                 if select_pos < TABLEAU:
                     if select_pos > 1:   # adjust for the gap between waste and foundations
                         select_pos += 1
