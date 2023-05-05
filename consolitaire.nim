@@ -277,11 +277,12 @@ proc main() =
                 #     for card in 0..board[TABLEAU+i].high:
                 #         board[TABLEAU+i][card].visible = true
             of Key.E, Key.ShiftE:
-                if board[STOCK].len != 0:
-                    pop_single(board[STOCK], board[WASTE])
-                    board[WASTE][board[WASTE].high].visible = true
-                else:
-                    pop_multiple_in_order(board[WASTE], board[STOCK], board[WASTE].len)
+                if not in_place_mode:
+                    if board[STOCK].len != 0:
+                        pop_single(board[STOCK], board[WASTE])
+                        board[WASTE][board[WASTE].high].visible = true
+                    else:
+                        pop_multiple_in_order(board[WASTE], board[STOCK], board[WASTE].len)
             of Key.A, Key.ShiftA, Key.Left:
                 if select_pos == 0: select_pos = 6
                 elif select_pos == 6: select_pos = 13
