@@ -144,8 +144,9 @@ proc render_everything(tb: var TerminalBuffer, bx, by: int) = # EVERYTHINGGGGGGG
 
     #draw help
     if show_help:
-        tb.write(bottom_text_offset+5, terminalHeight()-5, " wasd  move cursor around the board")
-        tb.write(bottom_text_offset+5, terminalHeight()-4, "space  pick up / place cards")
+        tb.write(bottom_text_offset+5, terminalHeight()-6, " wasd  move cursor around the board")
+        tb.write(bottom_text_offset+5, terminalHeight()-5, "space  pick up / place cards")
+        tb.write(bottom_text_offset+5, terminalHeight()-4, "    f  auto-move card into foundations")
         tb.write(bottom_text_offset+5, terminalHeight()-3, "    r  toggle suit chars / letters")
 
     #draw selection box
@@ -233,6 +234,10 @@ proc can_place_selection(): bool =
 
     return true
 
+proc can_auto_place(i: int): bool =
+    result = (board[FOUNDATIONS+i][board[FOUNDATIONS+i].high].suit == board[select_pos][board[select_pos].high].suit)
+    result = result and (board[FOUNDATIONS+i][board[FOUNDATIONS+i].high].rank == board[select_pos][board[select_pos].high].rank - 1)
+
 proc check_has_won() =
     var r = true
     for d in 0..3:
@@ -288,7 +293,6 @@ proc main() =
             else: discard
         if has_won: key = Key.None  # lock input if the game is over
         case key
-            of Key.Escape: exit_proc()
             # of Key.P: has_won = true      # debug feature
             of Key.R, Key.ShiftR: 
                 use_ascii_suits = not use_ascii_suits
@@ -305,6 +309,19 @@ proc main() =
                         board[WASTE][board[WASTE].high].visible = true
                     else:
                         pop_multiple_in_order(board[WASTE], board[STOCK], board[WASTE].len)
+            of Key.F, Key.ShiftF:
+                if (not in_place_mode) and select_len == 1 and board[select_pos].len != 0 and select_pos != 0:
+                    if board[select_pos][board[select_pos].high].rank == 1:
+                        for i in 0..3:
+                            if board[FOUNDATIONS+i].len == 0:
+                                pop_single(board[select_pos], board[FOUNDATIONS+i])
+                                break
+                    else:
+                        for i in 0..3:
+                            if board[FOUNDATIONS+i].len == 0: continue
+                            if can_auto_place(i):
+                                pop_single(board[select_pos], board[FOUNDATIONS+i])
+                                break
             of Key.A, Key.ShiftA, Key.Left:
                 if select_pos == 0: select_pos = 6
                 elif select_pos == 6: select_pos = 13
