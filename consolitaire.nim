@@ -23,8 +23,10 @@ const
 var 
     board: array[13, seq[Card]] # 0 = stock, 1 = waste, 2-5 is foundations, 6-12 is tableau
 
-    select_pos = 0
+    select_pos = 6
     select_len = 1
+    last_select_pos = 0
+    last_select_len = 1
     selection_buffer: seq[Card]
 
     color_hidden = fgBlue
@@ -34,8 +36,6 @@ var
     show_help = false
     in_place_mode = false
     has_won = false
-    last_select_pos = 0
-    last_select_len = 1
     min_height = 28
     min_width = 87
     bottom_text = "press `h` to toggle help - press ESC to quit"  # lmao
@@ -323,7 +323,7 @@ proc main() =
                                 pop_single(board[select_pos], board[FOUNDATIONS+i])
                                 break
             of Key.A, Key.ShiftA, Key.Left:
-                if select_pos == 0: select_pos = 6
+                if select_pos in [0,1]: select_pos = 6
                 elif select_pos == 6: select_pos = 13
                 select_pos -= 1
                 select_len = 1
@@ -382,6 +382,7 @@ proc main() =
                         select_len = last_select_len
                     in_place_mode = false
             else: discard
+        if select_pos == STOCK: select_pos = WASTE
 
         #unhide top cards in tableau decks
         for i in 0..6:
