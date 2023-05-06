@@ -33,6 +33,7 @@ var
     use_ascii_suits = false
     show_help = false
     in_place_mode = false
+    has_won = false
     last_select_pos = 0
     last_select_len = 1
     min_height = 28
@@ -130,7 +131,7 @@ proc write_card(tb: var TerminalBuffer, x, y: int, card: Card, dataOnLeft: bool)
     else:
         tb.write(x+1, y, " " & suitstr & " " & rankstr & " ")
 
-proc render_everything(tb: var TerminalBuffer, bx, by: int) = # EVERYTHINGGGGGGGG
+proc render_everything(tb: var TerminalBuffer, bx, by: int) = # EVERYTHINGGGGGGGG - bx and by are the base coordinates for drawing the main board
 
     let bottom_text_offset = (terminalWidth() - (bottom_text.len + 4)) div 2
 
@@ -201,6 +202,16 @@ proc render_everything(tb: var TerminalBuffer, bx, by: int) = # EVERYTHINGGGGGGG
         tb.write(bx+selbox_x+5, by+selbox_y+3, "^^^")
         for i in 0..selection_buffer.high:
             tb.write_card(bx+selbox_x+1, by+selbox_y+i+5, selection_buffer[i], false)
+    
+    #draw winning text
+    if has_won:
+        tb.setForegroundColor(fgYellow)
+        tb.write(bx+22, by+9,  r"__  ______  __  __   _       _______   ____")
+        tb.write(bx+22, by+10, r"\ \/ / __ \/ / / /  | |     / /  _/ | / / /")
+        tb.write(bx+22, by+11, r" \  / / / / / / /   | | /| / // //  |/ / / ")
+        tb.write(bx+22, by+12, r" / / /_/ / /_/ /    | |/ |/ // // /|  /_/  ")
+        tb.write(bx+22, by+13, r"/_/\____/\____/     |__/|__/___/_/ |_(_)   ")
+
 
 proc cannot_extend_selection(): bool = 
     return board[select_pos].len < 2 or board[select_pos].len == select_len or (not board[select_pos][board[select_pos].high-select_len].visible)
@@ -221,6 +232,12 @@ proc can_place_selection(): bool =
             if selection_buffer[0].rank != board[select_pos][board[select_pos].high].rank-1: return false    # cant place out of order
 
     return true
+
+proc check_has_won() =
+    var r = true
+    for d in 0..3:
+        r = r and (board[FOUNDATIONS+d].len == 13)
+    has_won = r
 
 proc exit_proc() {.noconv.} =
     illwillDeinit()
@@ -268,6 +285,11 @@ proc main() =
         var key = getKey()
         case key
             of Key.Escape: exit_proc()
+            else: discard
+        if has_won: key = Key.None  # lock input if the game is over
+        case key
+            of Key.Escape: exit_proc()
+            # of Key.P: has_won = true      # debug feature
             of Key.R, Key.ShiftR: 
                 use_ascii_suits = not use_ascii_suits
             of Key.H, Key.ShiftH: 
@@ -349,6 +371,7 @@ proc main() =
             if board[TABLEAU+i].len == 0 or in_place_mode: continue
             board[TABLEAU+i][board[TABLEAU+i].high].visible = true
 
+        if not has_won: check_has_won()
         tb.render_everything((terminalWidth()-min_width-2) div 2,0)
         tb.display()
         sleep(20)   # slows the program down so it doesn't re-render as much when there isn't anything going on - no more 17% cpu usage
