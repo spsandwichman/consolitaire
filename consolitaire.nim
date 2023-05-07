@@ -18,6 +18,8 @@ const
     WASTE = 1
     FOUNDATIONS = 2
     TABLEAU = 6
+    CARD_HEIGHT = 7
+    CARD_WIDTH = 11
 
 var 
     board: array[13, seq[Card]] # 0 = stock, 1 = waste, 2-5 is foundations, 6-12 is tableau
@@ -151,25 +153,6 @@ proc render_everything(tb: var TerminalBuffer, bx, by: int) = # EVERYTHINGGGGGGG
 
     tb.setBackgroundColor(bgBlack)
 
-    # draw text elements
-    tb.setForegroundColor(fgCyan)
-    tb.write(bottom_text_offset, terminalHeight()-1, "~ " & spaces(bottom_text.len) & " ~")
-    tb.setForegroundColor(fgWhite)
-    tb.write(bottom_text_offset+2, terminalHeight()-1, bottom_text)
-
-
-    #draw help
-    if show_help:
-        tb.setForegroundColor(fgCyan)
-        tb.write(1, terminalHeight()-1, "~ " & spaces(13) & " ~")
-        tb.setForegroundColor(fgWhite)
-        tb.write(3, terminalHeight()-1, "seed: " & toHex(seed,7))
-
-        tb.write(bottom_text_offset+5, terminalHeight()-6, " wasd  move cursor around the board")
-        tb.write(bottom_text_offset+5, terminalHeight()-5, "space  pick up / place cards")
-        tb.write(bottom_text_offset+5, terminalHeight()-4, "    f  auto-move card into foundations")
-        tb.write(bottom_text_offset+5, terminalHeight()-3, "    r  toggle suit chars / letters")
-
     #draw selection box
     var selbox_x = 0
     var selbox_y = 1
@@ -234,6 +217,28 @@ proc render_everything(tb: var TerminalBuffer, bx, by: int) = # EVERYTHINGGGGGGG
         tb.write(bx+22, by+11, r" \  / / / / / / /   | | /| / // //  |/ / / ")
         tb.write(bx+22, by+12, r" / / /_/ / /_/ /    | |/ |/ // // /|  /_/  ")
         tb.write(bx+22, by+13, r"/_/\____/\____/     |__/|__/___/_/ |_(_)   ")
+    
+    # draw text elements
+    tb.setForegroundColor(fgCyan)
+    tb.write(bottom_text_offset, terminalHeight()-1, "~ " & spaces(bottom_text.len) & " ~")
+    tb.setForegroundColor(fgWhite)
+    tb.write(bottom_text_offset+2, terminalHeight()-1, bottom_text)
+
+    #draw help
+    if show_help:
+        tb.setForegroundColor(fgCyan)
+        tb.write(1, terminalHeight()-1, "~ " & spaces(13) & " ~")
+        tb.setForegroundColor(fgWhite)
+        tb.write(3, terminalHeight()-1, "seed: " & toHex(seed,7))
+
+        tb.write(bottom_text_offset+5, terminalHeight()-6, " wasd  move cursor around the board")
+        tb.write(bottom_text_offset+5, terminalHeight()-5, "space  pick up / place cards")
+        tb.write(bottom_text_offset+5, terminalHeight()-4, "    f  auto-move card into foundations")
+        tb.write(bottom_text_offset+5, terminalHeight()-3, "    r  toggle suit chars / letters")
+    
+    # debug - print line numbers
+    for i in 0..<terminalHeight():
+        tb.write(0, i, $i)
 
 
 proc cannot_extend_selection(): bool = 
@@ -301,6 +306,12 @@ proc main() =
         tb.setBackgroundColor(bgBlack)
         tb.clear()
 
+        # recalculate required window bounds
+        var max_stack_len = 0
+        for i in 0..6:
+            max_stack_len = max(max_stack_len, board[TABLEAU+i].len)
+        min_height = 1 + CARD_HEIGHT + (max_stack_len-1) + CARD_HEIGHT + 1 
+
         # block if terminal is not the right size
         if terminalWidth() < min_width or terminalHeight() < min_height:
             var key = getKey()
@@ -357,7 +368,6 @@ proc main() =
                 elif select_pos == 6: select_pos = 13
                 select_pos -= 1
                 select_len = 1
-
             of Key.D, Key.ShiftD, Key.Right:
                 if select_pos == 5: select_pos = -1
                 elif select_pos == 12: select_pos = 5
@@ -421,6 +431,7 @@ proc main() =
 
         if not has_won: check_has_won()
         tb.render_everything((terminalWidth()-min_width-2) div 2,0)
+        tb.write(0, 0, $min_height)
         tb.display()
         sleep(20)   # slows the program down so it doesn't re-render as much when there isn't anything going on - no more 17% cpu usage
 
