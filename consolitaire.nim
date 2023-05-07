@@ -322,18 +322,16 @@ proc main() =
             of Key.Escape: exit_proc()
             of Key.H, Key.ShiftH: 
                 show_help = not show_help
+                # for i in 0..6:
+                #     if board[TABLEAU+i].len == 0: continue
+                #     for card in 0..board[TABLEAU+i].high:
+                #         board[TABLEAU+i][card].visible = true
             else: discard
         if has_won: key = Key.None  # lock input if the game is over
         case key
             # of Key.P: has_won = true      # debug feature
             of Key.R, Key.ShiftR: 
                 use_ascii_suits = not use_ascii_suits
-            of Key.H, Key.ShiftH: 
-                show_help = not show_help
-                # for i in 0..6:
-                #     if board[TABLEAU+i].len == 0: continue
-                #     for card in 0..board[TABLEAU+i].high:
-                #         board[TABLEAU+i][card].visible = true
             of Key.E, Key.ShiftE:
                 if not in_place_mode:
                     if board[STOCK].len != 0:
