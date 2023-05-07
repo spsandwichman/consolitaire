@@ -7,3 +7,6 @@ This project uses the console graphics library [illwill](https://github.com/john
 
 # usage
 To build, make sure you have [Nim](https://nim-lang.org/) installed. After, simply run `make` in the project directory, or `make run` to compile and run directly.
+```
+.\consolitaire.exe [seed]
+```

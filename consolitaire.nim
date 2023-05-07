@@ -2,9 +2,8 @@
 #   │consolitaire by sandwichman - https://sandwichman.dev/github/consolitaire
 #   ╰──╯
 
-import std/[os, sequtils, random, strutils]
+import std/[os, sequtils, random, strutils, parseopt]
 import illwill
-randomize()
 
 type
     Suit = enum
@@ -29,6 +28,8 @@ var
     last_select_len = 1
     selection_buffer: seq[Card]
 
+    seed: int64 = 0
+    seed_loaded = false
     color_hidden = fgBlue
     color_empty = fgCyan
     color_select = fgYellow
@@ -39,6 +40,19 @@ var
     min_height = 28
     min_width = 87
     bottom_text = "press `h` to toggle help - press ESC to quit"  # lmao
+
+proc load_args() = 
+    var p = initOptParser(commandLineParams().join(" "))
+    while true:
+        p.next()
+        case p.kind
+            of cmdEnd:
+                break
+            of cmdArgument:
+                seed = fromHex[int64](p.key)
+                seed_loaded = true
+            else: 
+                discard
 
 proc color(card: Card): int = (if card.suit == Spades or card.suit == Clubs: 0 else: 1)
 
@@ -135,15 +149,21 @@ proc render_everything(tb: var TerminalBuffer, bx, by: int) = # EVERYTHINGGGGGGG
 
     let bottom_text_offset = (terminalWidth() - (bottom_text.len + 4)) div 2
 
-    # draw text elements
     tb.setBackgroundColor(bgBlack)
+
+    # draw text elements
     tb.setForegroundColor(fgCyan)
     tb.write(bottom_text_offset, terminalHeight()-1, "~ " & spaces(bottom_text.len) & " ~")
     tb.setForegroundColor(fgWhite)
     tb.write(bottom_text_offset+2, terminalHeight()-1, bottom_text)
 
+
     #draw help
     if show_help:
+        tb.setForegroundColor(fgCyan)
+        tb.write(1, terminalHeight()-1, "~ " & spaces(13) & " ~")
+        tb.setForegroundColor(fgWhite)
+        tb.write(3, terminalHeight()-1, "seed: " & toHex(seed,7))
         tb.write(bottom_text_offset+5, terminalHeight()-6, " wasd  move cursor around the board")
         tb.write(bottom_text_offset+5, terminalHeight()-5, "space  pick up / place cards")
         tb.write(bottom_text_offset+5, terminalHeight()-4, "    f  auto-move card into foundations")
@@ -250,9 +270,17 @@ proc exit_proc() {.noconv.} =
     quit(0)
 
 proc main() =
+    load_args()
     illwillInit(fullscreen = true)
     setControlCHook(exit_proc)
     hideCursor()
+
+    #initialize random seed
+    if not seed_loaded:
+        randomize()
+        seed = rand(0xfffffff)
+    randomize(seed)
+    
 
     # construct and shuffle deck
     for s in [Spades, Hearts, Clubs, Diamonds]:
