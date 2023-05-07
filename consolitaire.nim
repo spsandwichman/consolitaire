@@ -237,8 +237,8 @@ proc render_everything(tb: var TerminalBuffer, bx, by: int) = # EVERYTHINGGGGGGG
         tb.write(bottom_text_offset+5, terminalHeight()-3, "    r  toggle suit chars / letters")
     
     # debug - print line numbers
-    for i in 0..<terminalHeight():
-        tb.write(0, i, $i)
+    # for i in 0..<terminalHeight():
+    #     tb.write(0, i, $i)
 
 
 proc cannot_extend_selection(): bool = 
@@ -282,7 +282,7 @@ proc main() =
     setControlCHook(exit_proc)
     hideCursor()
 
-    #initialize random seed
+    # initialize random seed
     if not seed_loaded:
         randomize()
         seed = rand(0xfffffff)
@@ -424,14 +424,14 @@ proc main() =
             else: discard
         if select_pos == STOCK: select_pos = WASTE
 
-        #unhide top cards in tableau decks
+        # unhide top cards in tableau decks
         for i in 0..6:
             if board[TABLEAU+i].len == 0 or in_place_mode: continue
             board[TABLEAU+i][board[TABLEAU+i].high].visible = true
 
         if not has_won: check_has_won()
         tb.render_everything((terminalWidth()-min_width-2) div 2,0)
-        tb.write(0, 0, $min_height)
+        #tb.write(0, 0, $min_height)
         tb.display()
         sleep(20)   # slows the program down so it doesn't re-render as much when there isn't anything going on - no more 17% cpu usage
 
