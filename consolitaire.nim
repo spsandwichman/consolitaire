@@ -164,6 +164,7 @@ proc render_everything(tb: var TerminalBuffer, bx, by: int) = # EVERYTHINGGGGGGG
         tb.write(1, terminalHeight()-1, "~ " & spaces(13) & " ~")
         tb.setForegroundColor(fgWhite)
         tb.write(3, terminalHeight()-1, "seed: " & toHex(seed,7))
+
         tb.write(bottom_text_offset+5, terminalHeight()-6, " wasd  move cursor around the board")
         tb.write(bottom_text_offset+5, terminalHeight()-5, "space  pick up / place cards")
         tb.write(bottom_text_offset+5, terminalHeight()-4, "    f  auto-move card into foundations")
@@ -220,6 +221,7 @@ proc render_everything(tb: var TerminalBuffer, bx, by: int) = # EVERYTHINGGGGGGG
     # draw selection stack
     if in_place_mode:
         tb.setForegroundColor(color_select)
+        #tb.drawRect(bx+selbox_x, by+selbox_y+5, bx+selbox_x+selbox_width, by+selbox_y+10+selection_buffer.len)
         tb.write(bx+selbox_x+5, by+selbox_y+3, "^^^")
         for i in 0..selection_buffer.high:
             tb.write_card(bx+selbox_x+1, by+selbox_y+i+5, selection_buffer[i], false)
@@ -318,6 +320,8 @@ proc main() =
         var key = getKey()
         case key
             of Key.Escape: exit_proc()
+            of Key.H, Key.ShiftH: 
+                show_help = not show_help
             else: discard
         if has_won: key = Key.None  # lock input if the game is over
         case key
