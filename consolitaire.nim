@@ -288,7 +288,6 @@ proc main() =
         seed = rand(0xfffffff)
     randomize(seed)
     
-
     # construct and shuffle deck
     for s in [Spades, Hearts, Clubs, Diamonds]:
         for r in 1..13:
@@ -348,6 +347,7 @@ proc main() =
                     if board[STOCK].len != 0:
                         pop_single(board[STOCK], board[WASTE])
                         board[WASTE][board[WASTE].high].visible = true
+                        select_pos = 1
                     else:
                         pop_multiple_in_order(board[WASTE], board[STOCK], board[WASTE].len)
             of Key.F, Key.ShiftF:
