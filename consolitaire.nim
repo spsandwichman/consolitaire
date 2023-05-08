@@ -348,6 +348,7 @@ proc main() =
                         pop_single(board[STOCK], board[WASTE])
                         board[WASTE][board[WASTE].high].visible = true
                         select_pos = 1
+                        select_len = 1
                     else:
                         pop_multiple_in_order(board[WASTE], board[STOCK], board[WASTE].len)
             of Key.F, Key.ShiftF:
