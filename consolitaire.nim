@@ -156,7 +156,7 @@ proc render_everything(tb: var TerminalBuffer, bx, by: int) = # EVERYTHINGGGGGGG
     #draw selection box
     var selbox_x = 0
     var selbox_y = 1
-    var selbox_width = 12
+    var selbox_width = CARD_WIDTH + 1
     case select_pos          # writing this late and cant be fucked to optimize it - do later probably
         of 0:
             selbox_x = select_pos * 12
